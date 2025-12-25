@@ -193,8 +193,8 @@ export default function DashboardPage() {
                       setStep("source");
                     }}
                     className={`group relative p-8 rounded-[32px] border transition-all duration-500 text-left overflow-hidden ${selectedTemplate?.id === tpl.id
-                        ? 'bg-indigo-600/20 border-indigo-500 shadow-[0_0_40px_rgba(99,102,241,0.2)]'
-                        : 'bg-slate-900/40 border-slate-800 hover:border-slate-700 hover:bg-slate-900/60'
+                      ? 'bg-indigo-600/20 border-indigo-500 shadow-[0_0_40px_rgba(99,102,241,0.2)]'
+                      : 'bg-slate-900/40 border-slate-800 hover:border-slate-700 hover:bg-slate-900/60'
                       } ${i === 0 ? 'lg:col-span-2' : ''} active:scale-[0.98]`}
                   >
                     <div className="relative z-10">
@@ -381,21 +381,22 @@ export default function DashboardPage() {
                   </button>
                 </div>
                 <div className="flex gap-2">
-                  <div className="flex bg-slate-800/50 p-1 rounded-xl border border-slate-700/50">
+                  <div className="flex bg-slate-800/50 p-1 rounded-xl border border-slate-700/50 text-slate-100 font-sans">
                     <button className="px-4 py-1.5 text-xs font-bold text-white bg-slate-700/80 rounded-lg shadow-lg active:scale-95">Desktop</button>
                     <button className="px-4 py-1.5 text-xs font-bold text-slate-500 hover:text-slate-300 transition-colors active:scale-95">Mobile</button>
                   </div>
                 </div>
+              </div>
 
-                <div className="flex-1 overflow-y-auto p-12 flex justify-center items-start pattern-dots pb-24">
-                  <div className="w-full max-w-5xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                    <WidgetPreview
-                      widget={widget}
-                      summary={summary}
-                      backendUrl={BACKEND_URL}
-                    />
-                  </div>
+              <div className="flex-1 overflow-y-auto p-12 flex justify-center items-start pattern-dots pb-24">
+                <div className="w-full max-w-5xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                  <WidgetPreview
+                    widget={widget}
+                    summary={summary}
+                    backendUrl={BACKEND_URL}
+                  />
                 </div>
+              </div>
             </section>
           </div>
         )}

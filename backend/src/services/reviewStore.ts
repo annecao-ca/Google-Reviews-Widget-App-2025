@@ -3,7 +3,7 @@ import { Review, ReviewInsight, ReviewSummary } from "../../../shared/types";
 import { Prisma } from "@prisma/client";
 
 export class ReviewStore {
-  async persist(widgetId: string, reviews: Review[], insights: ReviewInsight[]) {
+  async persist(placeId: string, reviews: Review[], insights: ReviewInsight[]) {
     // 1. Create or Update reviews
     for (const review of reviews) {
       await prisma.review.upsert({
@@ -17,7 +17,7 @@ export class ReviewStore {
         },
         create: {
           id: review.id,
-          widgetId: widgetId,
+          placeId: placeId,
           rating: review.rating,
           text: review.text,
           authorName: review.authorName,
@@ -46,9 +46,9 @@ export class ReviewStore {
     }
   }
 
-  async loadSummary(widgetId: string): Promise<ReviewSummary | null> {
+  async loadSummary(placeId: string): Promise<ReviewSummary | null> {
     const reviews = await prisma.review.findMany({
-      where: { widgetId },
+      where: { placeId },
       include: {
         insight: true,
       },
@@ -72,7 +72,7 @@ export class ReviewStore {
 
 
     return {
-      placeId: "N/A",
+      placeId: placeId,
       totalReviews: reviews.length,
       averageRating,
       reviews: reviews.map((r) => ({
@@ -81,7 +81,7 @@ export class ReviewStore {
         rating: r.rating,
         text: r.text,
         time: Math.floor(r.publishTime.getTime() / 1000),
-        relativeTimeDescription: "", // Could be calculated or stored
+        relativeTimeDescription: "",
         profilePhotoUrl: r.profilePhotoUrl ?? undefined,
       })),
       recentInsights: insights.slice(0, 3),

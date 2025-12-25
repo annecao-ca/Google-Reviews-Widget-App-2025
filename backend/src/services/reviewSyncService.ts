@@ -28,8 +28,8 @@ export class ReviewSyncService {
       console.error("[ReviewSyncService] AI Summarization failed:", err);
     }
 
-    console.log(`[ReviewSyncService] Persisting ${reviews.length} reviews to DB...`);
-    await this.store.persist(this.widgetId, reviews, insights);
+    console.log(`[ReviewSyncService] Persisting ${reviews.length} reviews to DB using placeId: ${this.placeId}...`);
+    await this.store.persist(this.placeId, reviews, insights);
     console.log(`[ReviewSyncService] Sync completed successfully`);
 
     return {
@@ -39,7 +39,8 @@ export class ReviewSyncService {
   }
 
   async getSummary(): Promise<ReviewSummary | null> {
-    return this.store.loadSummary(this.widgetId);
+    console.log(`[ReviewSyncService] Loading summary for placeId: ${this.placeId}`);
+    return this.store.loadSummary(this.placeId);
   }
 }
 
