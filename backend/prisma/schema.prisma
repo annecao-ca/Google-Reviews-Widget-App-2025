@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+
+
+model Widget {
+  id        String   @id @default(cuid())
+  placeId      String
+  businessName String?
+  title        String?  @default("Google Reviews")
+  settings  Json?    // Stores WidgetSettings: { layout, theme, primaryColor, showHeader, etc. }
+  reviews   Review[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id               String          @id // This will be the Google Review ID
+  widgetId         String
+  widget           Widget          @relation(fields: [widgetId], references: [id])
+  rating           Int
+  text             String
+  authorName       String
+  profilePhotoUrl  String?
+  publishTime      DateTime
+
+  insight          ReviewInsight?
+  createdAt        DateTime        @default(now())
+}
+
+model ReviewInsight {
+  id         String   @id @default(cuid())
+  reviewId   String   @unique
+  review     Review   @relation(fields: [reviewId], references: [id])
+  sentiment  String   // positive, neutral, negative
+  summary    String
+  highlights Json     // Array of strings
+  createdAt  DateTime @default(now())
+}

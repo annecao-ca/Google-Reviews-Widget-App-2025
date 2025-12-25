@@ -1,0 +1,24 @@
+{
+  "name": "saas-google-reviews-widget-ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "backend",
+    "frontend/dashboard",
+    "frontend/embed"
+  ],
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "dev:dashboard": "cd frontend/dashboard && npm run dev",
+    "dev:embed": "cd frontend/embed && npm run dev",
+    "lint": "npx eslint .",
+    "test": "npx vitest run"
+  },
+  "devDependencies": {
+    "csstype": "^3.2.3",
+    "form-data": "^4.0.5",
+    "typescript": "^5.5.3",
+    "undici-types": "^7.16.0"
+  }
+}
