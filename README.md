@@ -46,7 +46,7 @@ Trong môi trường Production, nên sử dụng **PostgreSQL** thay vì SQLite
 1. Cài đặt: `npm run install:all`
 2. Tạo file `.env` trong thư mục gốc (xem `.env.example`).
 3. Chạy Backend: `npm run dev:backend`
-4. Chạy Dashboard: `npm run dev:dashboard` (tại http://localhost:3001)
+4. Chạy Dashboard: `npm run dev:dashboard` (tại http://localhost:3000)
 
 ---
 

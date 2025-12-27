@@ -20,7 +20,7 @@ Dựa trên cấu trúc project, đây là **SaaS Google Reviews Widget AI** - m
 | Thư mục | Mô tả |
 |---------|-------|
 | `/backend` | API Server (Node.js + Express + Prisma) - Port 5001 |
-| `/frontend/dashboard` | Dashboard quản lý (Next.js) - Port 3001 |
+| `/frontend/dashboard` | Dashboard quản lý (Next.js) - Port 3000 |
 | `/frontend/embed` | Widget nhúng vào website (TypeScript/Vite) |
 
 ---
@@ -75,7 +75,7 @@ npm run dev:backend
 ```bash
 npm run dev:dashboard
 ```
-→ Chạy tại: `http://localhost:3001`
+→ Chạy tại: `http://localhost:3000`
 
 ---
 
@@ -176,7 +176,7 @@ export GOOGLE_API_KEY=your_google_api_key \
 
 npm run build:embed        # một lần cho widget.js
 npm run dev:backend        # backend tại 5001
-npm run dev:dashboard      # dashboard tại 3001
+npm run dev:dashboard      # dashboard tại 3000
 ```
 Muốn sync schema: `cd backend && DATABASE_URL="file:./prisma/dev.db" npx prisma db push`.
 

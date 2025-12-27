@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,15 +13,18 @@
             padding: 20px;
             background: #f5f5f5;
         }
+
         .container {
             background: white;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         h1 {
             color: #333;
         }
+
         .widget-container {
             margin-top: 30px;
             padding: 20px;
@@ -29,37 +33,35 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Test Google Reviews Widget</h1>
         <p>Widget sẽ hiển thị bên dưới sau khi tải xong:</p>
-        
+
         <div class="widget-container">
             <div id="google-reviews-widget"></div>
         </div>
-        
+
         <!-- 
             HƯỚNG DẪN: 
-            1. Vào dashboard http://localhost:3001
+            1. Vào dashboard http://localhost:3000
             2. Tạo widget và copy Widget ID (ví dụ: w_vu0qiw, w_wiej7f)
             3. Thay "YOUR_WIDGET_ID_HERE" bên dưới bằng Widget ID thật của bạn
             4. Lưu file này
             5. Mở file này trong trình duyệt (double-click hoặc kéo vào browser)
         -->
         <script src="http://localhost:5001/widget.js" async></script>
-        <script
-            defer
-            src="http://localhost:5001/embed.js"
-            data-container-id="google-reviews-widget"
-            data-backend="http://localhost:5001"
-            data-widget-id="YOUR_WIDGET_ID_HERE">
-            <!-- ⬆️ THAY "YOUR_WIDGET_ID_HERE" BẰNG WIDGET ID THẬT CỦA BẠN (ví dụ: w_vu0qiw) -->
-        </script>
-        
-        <div style="margin-top: 30px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+        <script defer src="http://localhost:5001/embed.js" data-container-id="google-reviews-widget"
+            data-backend="http://localhost:5001" data-widget-id="YOUR_WIDGET_ID_HERE">
+                <!-- ⬆️ THAY "YOUR_WIDGET_ID_HERE" BẰNG WIDGET ID THẬT CỦA BẠN (ví dụ: w_vu0qiw) -->
+            </script>
+
+        <div
+            style="margin-top: 30px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
             <h3 style="margin-top: 0; color: #856404;">📝 Hướng dẫn:</h3>
             <ol style="color: #856404; line-height: 1.8;">
-                <li>Vào <a href="http://localhost:3001" target="_blank">dashboard</a> để lấy Widget ID</li>
+                <li>Vào <a href="http://localhost:3000" target="_blank">dashboard</a> để lấy Widget ID</li>
                 <li>Tìm dòng <code>data-widget-id="YOUR_WIDGET_ID_HERE"</code> ở trên</li>
                 <li>Thay <code>YOUR_WIDGET_ID_HERE</code> bằng Widget ID thật (ví dụ: <code>w_vu0qiw</code>)</li>
                 <li>Lưu file (Cmd + S)</li>
@@ -69,4 +71,5 @@
         </div>
     </div>
 </body>
+
 </html>
