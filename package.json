@@ -1,28 +1,30 @@
 {
-  "name": "saas-google-reviews-widget-ai",
+  "name": "backend",
   "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "workspaces": [
-    "backend",
-    "frontend/dashboard",
-    "frontend/embed"
-  ],
+  "main": "dist/index.js",
   "scripts": {
-    "install:all": "npm install && npm install --workspace=backend && npm install --workspace=frontend/dashboard && npm install --workspace=frontend/embed",
-    "build:embed": "cd frontend/embed && npm run build",
-    "build:dashboard": "cd frontend/dashboard && npm run build",
-    "build:backend": "cd backend && npm run build",
-    "build": "npm run build:embed && npm run build:dashboard && npm run build:backend",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:dashboard": "cd frontend/dashboard && npm run dev",
-    "dev:embed": "cd frontend/embed && npm run dev",
-    "start": "cd backend && npm run start"
+    "dev": "NODE_ENV=development ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "npx prisma generate && tsc -p tsconfig.json",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@prisma/client": "^6.19.1",
+    "cors": "^2.8.5",
+    "cross-fetch": "^4.0.5",
+    "dotenv": "^16.4.6",
+    "express": "^4.19.2",
+    "node-cron": "^3.0.2",
+    "openai": "^4.4.3"
   },
   "devDependencies": {
-    "csstype": "^3.2.3",
-    "form-data": "^4.0.5",
-    "typescript": "^5.5.3",
-    "undici-types": "^7.16.0"
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.8.3",
+    "@types/node-cron": "^3.0.11",
+    "prisma": "^6.19.1",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.5.3"
   }
 }
