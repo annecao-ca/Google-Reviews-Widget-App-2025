@@ -66,6 +66,9 @@ app.post("/api/reviews/sync", async (_req, res) => {
   if (!defaultPlaceId) {
     return res.status(400).json({ error: "GOOGLE_PLACE_ID not configured" });
   }
+  if (!apiKey) {
+    return res.status(400).json({ error: "GOOGLE_API_KEY not configured" });
+  }
   try {
     const service = new ReviewSyncService(defaultPlaceId, apiKey, "default");
     const result = await service.sync();
@@ -80,6 +83,9 @@ app.post("/api/reviews/sync", async (_req, res) => {
 app.get("/api/reviews/summary", async (_req, res) => {
   if (!defaultPlaceId) {
     return res.status(400).json({ error: "GOOGLE_PLACE_ID not configured" });
+  }
+  if (!apiKey) {
+    return res.status(400).json({ error: "GOOGLE_API_KEY not configured" });
   }
   try {
     const service = new ReviewSyncService(defaultPlaceId, apiKey, "default");
@@ -125,6 +131,9 @@ app.get("/api/places/search", async (req, res) => {
   if (!q) {
     return res.status(400).json({ error: "missing q" });
   }
+  if (!apiKey) {
+    return res.status(400).json({ error: "GOOGLE_API_KEY not configured" });
+  }
 
   try {
     const results = await resolvePlaceIdFromText(q, apiKey);
@@ -139,6 +148,9 @@ app.post("/api/widgets", async (req, res) => {
   const { query, title, theme } = req.body ?? {};
   if (!query || typeof query !== "string") {
     return res.status(400).json({ error: "missing query" });
+  }
+  if (!apiKey) {
+    return res.status(400).json({ error: "GOOGLE_API_KEY not configured" });
   }
 
   try {
@@ -165,7 +177,7 @@ app.post("/api/widgets", async (req, res) => {
     // --- Auto-sync initial reviews on creation ---
     try {
       console.log(`[POST /api/widgets] Initializing auto-sync for widget: ${widget.id}`);
-      const syncService = new ReviewSyncService(widget.placeId, apiKey!, widget.id);
+      const syncService = new ReviewSyncService(widget.placeId, apiKey, widget.id);
       await syncService.sync();
       console.log(`[POST /api/widgets] Auto-sync completed for: ${widget.id}`);
     } catch (syncError) {
@@ -207,6 +219,9 @@ app.patch("/api/widgets/:id", async (req, res) => {
 
 app.post("/api/widgets/:id/sync", async (req, res) => {
   const widgetId = req.params.id;
+  if (!apiKey) {
+    return res.status(400).json({ error: "GOOGLE_API_KEY not configured" });
+  }
   try {
     const widget = await widgetStore.get(widgetId);
     if (!widget) {
@@ -224,6 +239,9 @@ app.post("/api/widgets/:id/sync", async (req, res) => {
 
 app.get("/api/widgets/:id/summary", async (req, res) => {
   const widgetId = req.params.id;
+  if (!apiKey) {
+    return res.status(400).json({ error: "GOOGLE_API_KEY not configured" });
+  }
   try {
     const widget = await widgetStore.get(widgetId);
     if (!widget) {

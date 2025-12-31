@@ -18,6 +18,30 @@ export interface ReviewSummary {
     placeId: string;
     totalReviews: number;
     averageRating: number;
+    reviews: Review[];
     recentInsights: ReviewInsight[];
     lastSyncedAt: string;
+}
+export interface WidgetSettings {
+    layout: "grid" | "list" | "carousel" | "masonry" | "badge" | "floating";
+    theme: "light" | "dark";
+    primaryColor: string;
+    showHeader: boolean;
+    showRating: boolean;
+    showReviews: boolean;
+    showAiSummary: boolean;
+    showDate: boolean;
+    showAuthorPhoto: boolean;
+    cardStyle: "flat" | "shadow" | "outline";
+    borderRadius: number;
+    fontSize: number;
+    minRating: number;
+    sortBy: "recent" | "rating";
+}
+export interface WidgetConfig {
+    id: string;
+    placeId: string;
+    businessName: string;
+    title: string;
+    settings: WidgetSettings;
 }

@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "NODE_ENV=development ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "npx prisma generate && tsc -p tsconfig.json",
+    "build": "npx prisma generate && tsc -p tsconfig.json && mkdir -p dist && cp dist/backend/src/index.js dist/index.js 2>/dev/null || true",
     "start": "node dist/index.js"
   },
   "dependencies": {

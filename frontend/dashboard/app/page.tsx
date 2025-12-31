@@ -118,15 +118,21 @@ export default function DashboardPage() {
           settings: widget.settings
         })
       });
+    } catch (error) {
+      console.error("Failed to save settings:", error);
     } finally {
       setSaving(false);
     }
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => { if (widget) handleSaveSettings(); }, 1000);
+    if (!widget || !activeWidgetId) return;
+    const timer = setTimeout(() => {
+      handleSaveSettings();
+    }, 1000);
     return () => clearTimeout(timer);
-  }, [widget?.settings, widget?.title]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [widget?.settings, widget?.title, activeWidgetId]);
 
   async function handleCreateWidget() {
     if (!query.trim() || !selectedTemplate) return;

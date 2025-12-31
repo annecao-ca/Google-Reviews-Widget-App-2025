@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json && mkdir -p dist && cp dist/frontend/embed/src/widget.js dist/widget.js 2>/dev/null || true"
   },
   "devDependencies": {
     "typescript": "^5.5.3"
