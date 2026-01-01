@@ -1,4 +1,3 @@
-import cors from "cors";
 import path from "path";
 import { ReviewSyncService } from "./services/reviewSyncService";
 import { scheduleGoogleReviewSync } from "./jobs/syncGoogleReviews";
@@ -8,6 +7,7 @@ import { prisma } from "./lib/prisma";
 
 // Railway/Vercel: process.env.XYZ tự có, không cần dotenv
 const express = require("express");
+const cors = require("cors");
 const projectRoot = process.cwd().endsWith("backend")
   ? path.resolve(process.cwd(), "..")
   : process.cwd();
