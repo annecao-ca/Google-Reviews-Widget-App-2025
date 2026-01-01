@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import * as dotenv from "dotenv";
 import path from "path";
 import { ReviewSyncService } from "./services/reviewSyncService";
 import { scheduleGoogleReviewSync } from "./jobs/syncGoogleReviews";
@@ -8,14 +7,15 @@ import { resolvePlaceIdFromText } from "./services/placeResolver";
 import { WidgetStore } from "./services/widgetStore";
 import { prisma } from "./lib/prisma";
 
-
 // Load .env from project root
 // When running from backend/, go up one level; when from root, use current dir
 // On Vercel, process.cwd() is the project root
 const projectRoot = process.cwd().endsWith("backend")
   ? path.resolve(process.cwd(), "..")
   : process.cwd();
-dotenv.config({ path: path.join(projectRoot, ".env") });
+
+const dotenv = require("dotenv");
+dotenv.config();
 
 const app = express();
 app.use(cors());
