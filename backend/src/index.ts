@@ -40,7 +40,8 @@ app.get("/embed.js", (_req, res) => {
   });
 });
 
-const PORT = process.env.PORT ? Number(process.env.PORT) : 5001;
+// Railway sets PORT automatically via process.env.PORT
+const PORT = process.env.PORT ? Number(process.env.PORT) : (process.env.NODE_ENV === "production" ? 8080 : 5001);
 const apiKey = process.env.GOOGLE_API_KEY;
 
 if (!apiKey) {
@@ -259,10 +260,13 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", service: "google-reviews-widget" });
 });
 
-// Start server - Railway needs this to always run
+// Start server - Always start for Railway/production
+// Only skip if explicitly on Vercel (serverless)
 if (!process.env.VERCEL) {
-  app.listen(PORT, () => {
-    console.log(`Backend listening at http://localhost:${PORT}`);
+  const serverPort = process.env.PORT || PORT;
+  app.listen(serverPort, "0.0.0.0", () => {
+    console.log(`Backend listening on port ${serverPort}`);
+    console.log(`Health check: http://0.0.0.0:${serverPort}/api/health`);
   });
 }
 
