@@ -4,8 +4,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "NODE_ENV=development ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "npx prisma generate && npx prisma db push --skip-generate && tsc -p tsconfig.json || true && mkdir -p dist && if [ -f dist/src/index.js ]; then cp dist/src/index.js dist/index.js && cp -r dist/src/* dist/ 2>/dev/null || true && rm -rf dist/src; elif [ -f dist/index.js ]; then echo 'dist/index.js already exists'; else echo 'ERROR: dist/index.js not found after build'; exit 1; fi",
-    "start": "node dist/index.js"
+    "build": "npx prisma generate && tsc -p tsconfig.json || true && mkdir -p dist && if [ -f dist/src/index.js ]; then cp dist/src/index.js dist/index.js && cp -r dist/src/* dist/ 2>/dev/null || true && rm -rf dist/src; elif [ -f dist/index.js ]; then echo 'dist/index.js exists'; else echo 'ERROR: dist/index.js not found'; exit 1; fi",
+    "start": "npx prisma db push --skip-generate || echo 'Migration failed, continuing...' && node dist/index.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
