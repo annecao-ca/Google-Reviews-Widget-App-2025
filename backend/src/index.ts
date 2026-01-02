@@ -151,13 +151,14 @@ app.post("/api/widgets", async (req, res) => {
 
   try {
     console.log(`[POST /api/widgets] Searching for: "${query}"`);
+    console.log(`[POST /api/widgets] API Key present: ${apiKey ? 'YES' : 'NO'}`);
     const candidates = await resolvePlaceIdFromText(query, apiKey);
     if (!candidates || !candidates.length) {
       console.log(`[POST /api/widgets] No places found for: "${query}"`);
       return res.status(404).json({
         error: "no place found",
         query,
-        hint: "Thử nhập địa chỉ đầy đủ hơn hoặc kiểm tra Google API key có bật Places API chưa"
+        hint: "Thử nhập địa chỉ đầy đủ hơn (ví dụ: 'Starbucks New York' thay vì URL Google Maps). Nếu vẫn lỗi, kiểm tra Google API key có được set trên Railway và có bật Places API (New) chưa."
       });
     }
 
@@ -196,7 +197,20 @@ app.post("/api/widgets", async (req, res) => {
   } catch (error: any) {
     console.error("Create widget failed:", error);
     const message = error?.message || "failed to create widget";
-    return res.status(500).json({ error: message, details: String(error) });
+    // Provide more helpful error messages
+    let hint = "";
+    if (message.includes("Places API (New) chưa được bật") || message.includes("API_KEY_SERVICE_BLOCKED")) {
+      hint = "Vui lòng: 1) Vào Google Cloud Console → APIs & Services → Library → bật 'Places API (New)'. 2) Kiểm tra API key có bị restrict quá chặt không.";
+    } else if (message.includes("GOOGLE_API_KEY not configured") || !apiKey) {
+      hint = "GOOGLE_API_KEY chưa được set trên Railway. Vào Railway → Service → Variables → thêm GOOGLE_API_KEY.";
+    } else if (message.includes("403") || message.includes("PERMISSION_DENIED")) {
+      hint = "API key không có quyền truy cập Places API (New). Kiểm tra Google Cloud Console → APIs & Services → Credentials → API key restrictions.";
+    }
+    return res.status(500).json({ 
+      error: message, 
+      details: String(error),
+      hint: hint || "Kiểm tra Railway logs để xem lỗi chi tiết."
+    });
   }
 });
 
