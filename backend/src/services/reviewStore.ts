@@ -3,7 +3,7 @@ import { Review, ReviewInsight, ReviewSummary } from "../../../shared/types";
 import { Prisma } from "@prisma/client";
 
 export class ReviewStore {
-  async persist(placeId: string, reviews: Review[], insights: ReviewInsight[]) {
+  async persist(placeId: string, reviews: Review[], insights: ReviewInsight[], totalReviews?: number) {
     // 1. Create or Update reviews
     for (const review of reviews) {
       await prisma.review.upsert({
@@ -46,7 +46,7 @@ export class ReviewStore {
     }
   }
 
-  async loadSummary(placeId: string, settings?: any): Promise<ReviewSummary | null> {
+  async loadSummary(placeId: string, settings?: any, googleTotalReviews?: number): Promise<ReviewSummary | null> {
     const minRating = settings?.minRating ?? 0;
     const sortBy = settings?.sortBy ?? "rating";
 
@@ -80,9 +80,12 @@ export class ReviewStore {
       }));
 
 
+    // Use Google's total reviews count if available, otherwise use local count
+    const totalReviewsCount = googleTotalReviews ?? reviews.length;
+
     return {
       placeId: placeId,
-      totalReviews: reviews.length,
+      totalReviews: totalReviewsCount,
       averageRating,
       reviews: reviews.map((r) => ({
         id: r.id,

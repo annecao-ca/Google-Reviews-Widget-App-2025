@@ -1,7 +1,7 @@
 import { fetchReviewsFromGoogle } from "./googleReviews";
 import { summarizeReviews } from "./reviewSummarizer";
 import { ReviewStore } from "./reviewStore";
-import { ReviewSummary, ReviewInsight } from "../../../shared/types";
+import { ReviewSummary, ReviewInsight, Review } from "../../../shared/types";
 
 export class ReviewSyncService {
   private readonly store = new ReviewStore();
@@ -12,10 +12,10 @@ export class ReviewSyncService {
     private widgetId: string
   ) { }
 
-  async sync(): Promise<{ syncedReviews: number; insightsGenerated: number }> {
+  async sync(): Promise<{ syncedReviews: number; insightsGenerated: number; totalReviews?: number }> {
     console.log(`[ReviewSyncService] Starting sync for widget: ${this.widgetId}, placeId: ${this.placeId}`);
-    const reviews = await fetchReviewsFromGoogle(this.placeId, this.apiKey);
-    console.log(`[ReviewSyncService] Fetched ${reviews.length} reviews from Google`);
+    const { reviews, totalReviews } = await fetchReviewsFromGoogle(this.placeId, this.apiKey);
+    console.log(`[ReviewSyncService] Fetched ${reviews.length} reviews from Google${totalReviews ? `, total reviews: ${totalReviews}` : ''}`);
 
     let insights: ReviewInsight[] = [];
     try {
@@ -29,18 +29,27 @@ export class ReviewSyncService {
     }
 
     console.log(`[ReviewSyncService] Persisting ${reviews.length} reviews to DB using placeId: ${this.placeId}...`);
-    await this.store.persist(this.placeId, reviews, insights);
+    await this.store.persist(this.placeId, reviews, insights, totalReviews);
     console.log(`[ReviewSyncService] Sync completed successfully`);
 
     return {
       syncedReviews: reviews.length,
       insightsGenerated: insights.length,
+      totalReviews,
     };
   }
 
   async getSummary(settings?: any): Promise<ReviewSummary | null> {
     console.log(`[ReviewSyncService] Loading summary for placeId: ${this.placeId} with settings:`, settings);
-    return this.store.loadSummary(this.placeId, settings);
+    // Fetch latest total reviews from Google API
+    let googleTotalReviews: number | undefined;
+    try {
+      const { totalReviews } = await fetchReviewsFromGoogle(this.placeId, this.apiKey);
+      googleTotalReviews = totalReviews;
+    } catch (err) {
+      console.warn(`[ReviewSyncService] Failed to fetch total reviews from Google, using cached value:`, err);
+    }
+    return this.store.loadSummary(this.placeId, settings, googleTotalReviews);
   }
 }
 
