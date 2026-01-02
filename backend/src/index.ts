@@ -13,7 +13,12 @@ const projectRoot = process.cwd().endsWith("backend")
   : process.cwd();
 
 const app = express();
-app.use(cors());
+// CORS: Allow all origins for widget embedding
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Serve widget static files
