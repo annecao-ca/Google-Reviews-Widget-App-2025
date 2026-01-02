@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "NODE_ENV=development ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "npx prisma generate && tsc -p tsconfig.json || true && mkdir -p dist && if [ -d dist/backend/src ]; then cp -r dist/backend/src/* dist/ && rm -rf dist/backend; elif [ -d dist/src ]; then cp -r dist/src/* dist/ && rm -rf dist/src; fi",
+    "build": "npx prisma generate && npx prisma db push --skip-generate && tsc -p tsconfig.json || true && mkdir -p dist && if [ -d dist/backend/src ]; then cp -r dist/backend/src/* dist/ && rm -rf dist/backend; elif [ -d dist/src ]; then cp -r dist/src/* dist/ && rm -rf dist/src; fi",
     "start": "node dist/index.js"
   },
   "dependencies": {
