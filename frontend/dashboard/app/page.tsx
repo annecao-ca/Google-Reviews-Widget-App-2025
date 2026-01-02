@@ -21,7 +21,7 @@ import {
   ExternalLink
 } from "lucide-react";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_WIDGET_BASE_URL ?? "http://localhost:5001";
+const BACKEND_URL = process.env.NEXT_PUBLIC_WIDGET_BASE_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5001";
 
 const TEMPLATES = [
   { id: "grid", name: "Modern Grid", icon: LayoutGrid, layout: "grid", description: "Standard grid layout for any page" },
@@ -165,10 +165,15 @@ export default function DashboardPage() {
       if (res.ok) {
         setActiveWidgetId(data.widget.id);
       } else {
-        alert(data.error || "Failed to create widget");
+        alert(data.error || data.hint || "Failed to create widget");
       }
-    } catch (e) {
-      alert("Server connection error");
+    } catch (e: any) {
+      console.error("Create widget error:", e);
+      if (BACKEND_URL.includes("localhost")) {
+        alert("Error: Backend URL not configured. Please set NEXT_PUBLIC_WIDGET_BASE_URL or NEXT_PUBLIC_BACKEND_URL environment variable on Vercel.");
+      } else {
+        alert(`Server connection error. Please check if backend is running at ${BACKEND_URL}`);
+      }
     } finally {
       setCreating(false);
     }
