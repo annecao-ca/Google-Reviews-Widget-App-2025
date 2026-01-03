@@ -75,8 +75,8 @@ export async function renderGoogleReviewWidget(options: WidgetOptions) {
 
         <div class="gwr-reviews-container">
           ${summary.reviews.map(review => {
-            // Create Google Review link - link to Google Business Profile reviews page
-            const googleReviewUrl = `https://www.google.com/maps/place/?q=place_id:${widget.placeId}&cid=${widget.placeId}`;
+            // Create Google Review link - direct link to Google Reviews page
+            const googleReviewUrl = `https://search.google.com/local/reviews?placeid=${widget.placeId}`;
             return `
             <a href="${googleReviewUrl}" target="_blank" rel="noopener noreferrer" class="gwr-review-card-link" title="View this review on Google">
               <div class="gwr-review-card">
