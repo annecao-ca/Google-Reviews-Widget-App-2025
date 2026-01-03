@@ -75,10 +75,10 @@ export async function renderGoogleReviewWidget(options: WidgetOptions) {
 
         <div class="gwr-reviews-container">
           ${summary.reviews.map(review => {
-            // Create Google Maps link to the place (reviews section)
-            const googleMapsUrl = `https://www.google.com/maps/place/?q=place_id:${widget.placeId}`;
+            // Create Google Review link - link to Google Business Profile reviews page
+            const googleReviewUrl = `https://www.google.com/maps/place/?q=place_id:${widget.placeId}&cid=${widget.placeId}`;
             return `
-            <a href="${googleMapsUrl}" target="_blank" rel="noopener noreferrer" class="gwr-review-card-link">
+            <a href="${googleReviewUrl}" target="_blank" rel="noopener noreferrer" class="gwr-review-card-link" title="View this review on Google">
               <div class="gwr-review-card">
                 <div class="gwr-review-header">
                   ${settings.showAuthorPhoto ? `<img src="${review.profilePhotoUrl || 'https://www.gravatar.com/avatar/000?d=mp'}" class="gwr-author-img" />` : ""}
