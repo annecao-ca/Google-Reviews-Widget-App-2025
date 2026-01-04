@@ -88,4 +88,15 @@ export class WidgetStore {
       settings: widget.settings as any,
     }));
   }
+
+  async updatePlaceStats(id: string, rating?: number, userRatingCount?: number): Promise<void> {
+    const data: Prisma.WidgetUpdateInput = {};
+    if (rating !== undefined) data.googleRating = rating;
+    if (userRatingCount !== undefined) data.googleReviewCount = userRatingCount;
+
+    await prisma.widget.update({
+      where: { id },
+      data,
+    });
+  }
 }

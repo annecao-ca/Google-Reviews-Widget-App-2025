@@ -46,7 +46,12 @@ export class ReviewStore {
     }
   }
 
-  async loadSummary(placeId: string, settings?: any): Promise<ReviewSummary | null> {
+  async loadSummary(
+    placeId: string, 
+    settings?: any,
+    googleRating?: number | null,
+    googleReviewCount?: number | null
+  ): Promise<ReviewSummary | null> {
     const minRating = settings?.minRating ?? 0;
     const sortBy = settings?.sortBy ?? "rating";
 
@@ -64,17 +69,18 @@ export class ReviewStore {
       take: 50 // Limit to most recent/relevant reviews
     });
 
-    // Get total review count from database (not just filtered reviews)
-    const totalReviewCount = await prisma.review.count({
+    // Use Google rating and review count if available, otherwise fallback to calculated values
+    const averageRating = googleRating ?? (reviews.length > 0 
+      ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length 
+      : 0);
+    
+    const totalReviewCount = googleReviewCount ?? await prisma.review.count({
       where: { placeId }
     });
 
-    if (totalReviewCount === 0) {
+    if (totalReviewCount === 0 && reviews.length === 0) {
       return null;
     }
-
-    const totalRating = reviews.reduce((acc: number, review) => acc + review.rating, 0);
-    const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0;
 
     const insights = reviews
       .filter((r) => r.insight)

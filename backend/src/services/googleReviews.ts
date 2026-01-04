@@ -13,7 +13,7 @@ async function fetchPage(
   placeId: string,
   apiKey: string,
   pageToken?: string
-): Promise<{ reviews: Review[]; nextPageToken?: string; totalReviews?: number }> {
+): Promise<{ reviews: Review[]; nextPageToken?: string; rating?: number; userRatingCount?: number }> {
   // Places API (New) endpoint - get place details with reviews
   const url = `https://places.googleapis.com/v1/places/${placeId}`;
   
@@ -21,7 +21,7 @@ async function fetchPage(
     method: "GET",
     headers: {
       "X-Goog-Api-Key": apiKey,
-      "X-Goog-FieldMask": "reviews,id,displayName,userRatingCount,rating"
+      "X-Goog-FieldMask": "reviews,id,displayName,rating,userRatingCount"
     }
   });
 
@@ -62,30 +62,28 @@ async function fetchPage(
   }
   
   const reviews = rawReviews.map(normalizeGoogleReview);
-  
-  // Get total reviews count from Google API
-  const totalReviews = payload.userRatingCount || payload.ratingSummary?.userRatingCount || undefined;
-  
+
   return {
     reviews,
     nextPageToken: undefined, // Places API (New) pagination handled differently
-    totalReviews: totalReviews ? Number(totalReviews) : undefined
+    rating: payload.rating || undefined,
+    userRatingCount: payload.userRatingCount || undefined
   };
 }
 
-export async function fetchReviewsFromGoogle(placeId: string, apiKey: string): Promise<{ reviews: Review[]; totalReviews?: number }> {
+export async function fetchReviewsFromGoogle(
+  placeId: string, 
+  apiKey: string
+): Promise<{ reviews: Review[]; rating?: number; userRatingCount?: number }> {
   const reviews: Review[] = [];
-  let totalReviews: number | undefined;
   
   try {
-    const { reviews: pageReviews, totalReviews: fetchedTotal } = await fetchPage(placeId, apiKey);
+    const { reviews: pageReviews, rating, userRatingCount } = await fetchPage(placeId, apiKey);
     reviews.push(...pageReviews);
-    totalReviews = fetchedTotal;
+    return { reviews, rating, userRatingCount };
   } catch (error) {
     console.error("Failed to fetch reviews:", error);
     throw error;
   }
-
-  return { reviews, totalReviews };
 }
 
