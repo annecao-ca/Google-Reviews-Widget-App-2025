@@ -27,6 +27,10 @@ const embedSrcPath = path.join(projectRoot, "frontend", "embed");
 
 // Serve widget.js (compiled from TypeScript)
 app.get("/widget.js", (_req, res) => {
+  // Set headers for widget embedding
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Content-Type', 'application/javascript');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
   res.sendFile(path.join(embedDistPath, "widget.js"), (err) => {
     if (err) {
       console.error("Failed to serve widget.js:", err);
@@ -37,6 +41,10 @@ app.get("/widget.js", (_req, res) => {
 
 // Serve embed.js (loader script)
 app.get("/embed.js", (_req, res) => {
+  // Set headers for widget embedding
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Content-Type', 'application/javascript');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
   res.sendFile(path.join(embedSrcPath, "embed.js"), (err) => {
     if (err) {
       console.error("Failed to serve embed.js:", err);
