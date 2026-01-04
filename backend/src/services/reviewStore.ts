@@ -64,12 +64,17 @@ export class ReviewStore {
       take: 50 // Limit to most recent/relevant reviews
     });
 
-    if (reviews.length === 0) {
+    // Get total review count from database (not just filtered reviews)
+    const totalReviewCount = await prisma.review.count({
+      where: { placeId }
+    });
+
+    if (totalReviewCount === 0) {
       return null;
     }
 
     const totalRating = reviews.reduce((acc: number, review) => acc + review.rating, 0);
-    const averageRating = totalRating / reviews.length;
+    const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0;
 
     const insights = reviews
       .filter((r) => r.insight)
@@ -83,7 +88,7 @@ export class ReviewStore {
 
     return {
       placeId: placeId,
-      totalReviews: reviews.length,
+      totalReviews: totalReviewCount, // Use actual total from database
       averageRating,
       reviews: reviews.map((r) => ({
         id: r.id,
