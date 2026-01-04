@@ -626,10 +626,10 @@ function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: Rev
           </header>
         )}
 
-        {false && settings.showAiSummary && summary?.recentInsights && summary.recentInsights.length > 0 && (
+        {false && settings.showAiSummary && (summary?.recentInsights?.length ?? 0) > 0 && (
           <div className="p-ai-summary">
             <div className="p-ai-badge"><Sparkles className="w-3.5 h-3.5" /> AI Analysis</div>
-            <p className="m-0 text-xl font-bold leading-tight tracking-tight text-white/90">{summary.recentInsights[0].summary}</p>
+            <p className="m-0 text-xl font-bold leading-tight tracking-tight text-white/90">{summary?.recentInsights?.[0]?.summary}</p>
           </div>
         )}
 
