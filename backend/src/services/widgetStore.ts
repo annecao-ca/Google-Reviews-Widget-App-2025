@@ -74,4 +74,18 @@ export class WidgetStore {
       settings: widget.settings as any,
     };
   }
+
+  async list(): Promise<WidgetConfig[]> {
+    const widgets = await prisma.widget.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+
+    return widgets.map(widget => ({
+      id: widget.id,
+      placeId: widget.placeId,
+      businessName: widget.businessName ?? "Business",
+      title: widget.title ?? "Google Reviews",
+      settings: widget.settings as any,
+    }));
+  }
 }

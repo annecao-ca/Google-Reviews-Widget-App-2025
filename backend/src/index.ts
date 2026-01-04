@@ -287,6 +287,51 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", service: "google-reviews-widget" });
 });
 
+// Scheduled sync job for all widgets (runs daily at 2 AM UTC)
+async function syncAllWidgets() {
+  if (!apiKey) {
+    console.warn("[Scheduled Sync] Skipping: GOOGLE_API_KEY not configured");
+    return;
+  }
+  
+  try {
+    console.log("[Scheduled Sync] Starting sync for all widgets...");
+    const widgets = await widgetStore.list();
+    console.log(`[Scheduled Sync] Found ${widgets.length} widget(s) to sync`);
+    
+    for (const widget of widgets) {
+      try {
+        console.log(`[Scheduled Sync] Syncing widget: ${widget.id} (${widget.businessName || widget.title})`);
+        const service = new ReviewSyncService(widget.placeId, apiKey, widget.id);
+        await service.sync();
+        console.log(`[Scheduled Sync] Completed: ${widget.id}`);
+        // Add delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      } catch (error) {
+        console.error(`[Scheduled Sync] Failed for widget ${widget.id}:`, error);
+      }
+    }
+    console.log("[Scheduled Sync] All widgets synced");
+  } catch (error) {
+    console.error("[Scheduled Sync] Error:", error);
+  }
+}
+
+// Schedule daily sync at 2 AM UTC (can be overridden with OVERRIDE_SYNC_CRON env var)
+if (!process.env.VERCEL) {
+  const cron = require("node-cron");
+  const syncCronExpression = process.env.OVERRIDE_SYNC_CRON || "0 2 * * *"; // Daily at 2 AM UTC
+  if (cron.validate(syncCronExpression)) {
+    cron.schedule(syncCronExpression, syncAllWidgets, {
+      scheduled: true,
+      timezone: "UTC"
+    });
+    console.log(`[Scheduled Sync] Configured with cron: ${syncCronExpression} (Daily at 2 AM UTC)`);
+  } else {
+    console.warn(`[Scheduled Sync] Invalid cron expression: ${syncCronExpression}`);
+  }
+}
+
 // Start server - Always start for Railway/production
 // Only skip if explicitly on Vercel (serverless)
 if (!process.env.VERCEL) {
