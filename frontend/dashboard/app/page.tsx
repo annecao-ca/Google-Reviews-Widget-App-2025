@@ -528,6 +528,9 @@ function SnippetModal({ id, onClose, backendUrl }: { id: string, onClose: () => 
 function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: ReviewSummary | null, backendUrl: string }) {
   const { settings } = widget;
   if (!summary) return <div className="text-slate-700 italic text-center py-40 font-medium">Feeding reviews to AI...</div>;
+  
+  // TypeScript: summary is guaranteed to be non-null after this point
+  const safeSummary = summary;
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
@@ -614,11 +617,11 @@ function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: Rev
                 <div className="flex items-center gap-4">
                   {settings.showRating && (
                     <>
-                      <span className="font-black text-2xl text-amber-400">{summary.averageRating.toFixed(1)}</span>
-                      <div className="p-stars">{renderLargeStars(summary.averageRating)}</div>
+                      <span className="font-black text-2xl text-amber-400">{safeSummary.averageRating.toFixed(1)}</span>
+                      <div className="p-stars">{renderLargeStars(safeSummary.averageRating)}</div>
                     </>
                   )}
-                  <span className="text-xs uppercase font-black tracking-widest opacity-30">({summary.totalReviews} Reviews)</span>
+                  <span className="text-xs uppercase font-black tracking-widest opacity-30">({safeSummary.totalReviews} Reviews)</span>
                 </div>
               </div>
             </div>
@@ -626,15 +629,15 @@ function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: Rev
           </header>
         )}
 
-        {false && settings.showAiSummary && (summary?.recentInsights?.length ?? 0) > 0 && (
+        {false && settings.showAiSummary && safeSummary.recentInsights && safeSummary.recentInsights.length > 0 && (
           <div className="p-ai-summary">
             <div className="p-ai-badge"><Sparkles className="w-3.5 h-3.5" /> AI Analysis</div>
-            <p className="m-0 text-xl font-bold leading-tight tracking-tight text-white/90">{summary?.recentInsights?.[0]?.summary}</p>
+            <p className="m-0 text-xl font-bold leading-tight tracking-tight text-white/90">{safeSummary.recentInsights[0]?.summary}</p>
           </div>
         )}
 
         <div className="p-reviews-grid">
-          {summary.reviews.slice(0, 8).map(r => (
+          {safeSummary.reviews.slice(0, 8).map(r => (
             <div
               key={r.id}
               className="p-card"
