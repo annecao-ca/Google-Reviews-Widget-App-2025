@@ -283,6 +283,26 @@ app.get("/api/widgets/:id/summary", async (req, res) => {
   }
 });
 
+// Redirect endpoint to Google Reviews (bypasses CSP/iframe blocking)
+app.get("/api/redirect/google-reviews", async (req, res) => {
+  const placeId = req.query.placeId as string;
+  const businessName = req.query.business as string;
+  
+  if (!placeId) {
+    return res.status(400).json({ error: "placeId is required" });
+  }
+  
+  // Use Google Search URL format that works reliably
+  const searchQuery = businessName 
+    ? encodeURIComponent(`${businessName} reviews`)
+    : encodeURIComponent(`place_id:${placeId}`);
+  
+  const googleUrl = `https://www.google.com/search?q=${searchQuery}`;
+  
+  // Redirect to Google Search (which will show the Business Profile)
+  res.redirect(302, googleUrl);
+});
+
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", service: "google-reviews-widget" });
 });
