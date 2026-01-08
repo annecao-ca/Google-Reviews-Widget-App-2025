@@ -26,12 +26,12 @@ const embedDistPath = path.join(projectRoot, "frontend", "embed", "dist");
 const embedSrcPath = path.join(projectRoot, "frontend", "embed");
 
 // Serve widget.js (compiled from TypeScript)
-app.get("/widget.js", (_req, res) => {
+app.get("/widget.js", (_req: any, res: any) => {
   // Set headers for widget embedding
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'public, max-age=3600');
-  res.sendFile(path.join(embedDistPath, "widget.js"), (err) => {
+  res.sendFile(path.join(embedDistPath, "widget.js"), (err: any) => {
     if (err) {
       console.error("Failed to serve widget.js:", err);
       res.status(404).send("Widget file not found. Please build the widget first: cd frontend/embed && npm run build");
@@ -40,12 +40,12 @@ app.get("/widget.js", (_req, res) => {
 });
 
 // Serve embed.js (loader script)
-app.get("/embed.js", (_req, res) => {
+app.get("/embed.js", (_req: any, res: any) => {
   // Set headers for widget embedding
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'public, max-age=3600');
-  res.sendFile(path.join(embedSrcPath, "embed.js"), (err) => {
+  res.sendFile(path.join(embedSrcPath, "embed.js"), (err: any) => {
     if (err) {
       console.error("Failed to serve embed.js:", err);
       res.status(404).send("Embed file not found");
@@ -71,7 +71,7 @@ const defaultPlaceId = process.env.GOOGLE_PLACE_ID;
 
 
 // Legacy single-place endpoints (optional)
-app.post("/api/reviews/sync", async (_req, res) => {
+app.post("/api/reviews/sync", async (_req: any, res: any) => {
   if (!defaultPlaceId) {
     return res.status(400).json({ error: "GOOGLE_PLACE_ID not configured" });
   }
@@ -89,7 +89,7 @@ app.post("/api/reviews/sync", async (_req, res) => {
   }
 });
 
-app.get("/api/reviews/summary", async (_req, res) => {
+app.get("/api/reviews/summary", async (_req: any, res: any) => {
   if (!defaultPlaceId) {
     return res.status(400).json({ error: "GOOGLE_PLACE_ID not configured" });
   }
@@ -112,7 +112,7 @@ app.get("/api/reviews/summary", async (_req, res) => {
 
 // --- Multi-widget endpoints ---
 
-app.get("/api/widgets", async (_req, res) => {
+app.get("/api/widgets", async (_req: any, res: any) => {
   try {
     const widgets = await prisma.widget.findMany({
       orderBy: { createdAt: "desc" },
@@ -123,7 +123,7 @@ app.get("/api/widgets", async (_req, res) => {
     return res.status(500).json({ error: "failed to list widgets" });
   }
 });
-app.get("/api/widgets/:id", async (req, res) => {
+app.get("/api/widgets/:id", async (req: any, res: any) => {
   try {
     const widget = await widgetStore.get(req.params.id);
     if (!widget) return res.status(404).json({ error: "widget not found" });
@@ -134,7 +134,7 @@ app.get("/api/widgets/:id", async (req, res) => {
   }
 });
 
-app.get("/api/places/search", async (req, res) => {
+app.get("/api/places/search", async (req: any, res: any) => {
 
   const q = String(req.query.q ?? "").trim();
   if (!q) {
@@ -153,7 +153,7 @@ app.get("/api/places/search", async (req, res) => {
   }
 });
 
-app.post("/api/widgets", async (req, res) => {
+app.post("/api/widgets", async (req: any, res: any) => {
   const { query, title, theme } = req.body ?? {};
   if (!query || typeof query !== "string") {
     return res.status(400).json({ error: "missing query" });
@@ -227,7 +227,7 @@ app.post("/api/widgets", async (req, res) => {
   }
 });
 
-app.patch("/api/widgets/:id", async (req, res) => {
+app.patch("/api/widgets/:id", async (req: any, res: any) => {
   const widgetId = req.params.id;
   const { title, settings } = req.body;
   try {
@@ -240,7 +240,7 @@ app.patch("/api/widgets/:id", async (req, res) => {
 });
 
 
-app.post("/api/widgets/:id/sync", async (req, res) => {
+app.post("/api/widgets/:id/sync", async (req: any, res: any) => {
   const widgetId = req.params.id;
   if (!apiKey) {
     return res.status(400).json({ error: "GOOGLE_API_KEY not configured" });
@@ -260,7 +260,7 @@ app.post("/api/widgets/:id/sync", async (req, res) => {
   }
 });
 
-app.get("/api/widgets/:id/summary", async (req, res) => {
+app.get("/api/widgets/:id/summary", async (req: any, res: any) => {
   const widgetId = req.params.id;
   if (!apiKey) {
     return res.status(400).json({ error: "GOOGLE_API_KEY not configured" });
@@ -283,8 +283,8 @@ app.get("/api/widgets/:id/summary", async (req, res) => {
   }
 });
 
-// Redirect endpoint to Google Reviews (bypasses CSP/iframe blocking)
-app.get("/api/redirect/google-reviews", async (req, res) => {
+// Intermediate page to show Google Reviews link (bypasses CSP/iframe blocking)
+app.get("/api/redirect/google-reviews", async (req: any, res: any) => {
   const placeId = req.query.placeId as string;
   const businessName = req.query.business as string;
   
@@ -299,11 +299,98 @@ app.get("/api/redirect/google-reviews", async (req, res) => {
   
   const googleUrl = `https://www.google.com/search?q=${searchQuery}`;
   
-  // Redirect to Google Search (which will show the Business Profile)
-  res.redirect(302, googleUrl);
+  // Return HTML page with JavaScript auto-redirect (bypasses iframe/CSP restrictions)
+  res.setHeader('Content-Type', 'text/html');
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>View Reviews on Google</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          margin: 0;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: #333;
+        }
+        .container {
+          background: white;
+          padding: 40px;
+          border-radius: 16px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+          text-align: center;
+          max-width: 500px;
+        }
+        h1 {
+          margin: 0 0 20px 0;
+          color: #1a1a1a;
+          font-size: 24px;
+        }
+        p {
+          color: #666;
+          margin: 0 0 30px 0;
+          line-height: 1.6;
+        }
+        .button {
+          display: inline-block;
+          padding: 14px 32px;
+          background: #4285F4;
+          color: white;
+          text-decoration: none;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 16px;
+          transition: background 0.2s;
+          margin: 10px;
+          cursor: pointer;
+          border: none;
+        }
+        .button:hover {
+          background: #357ae8;
+        }
+        .link {
+          display: block;
+          margin-top: 20px;
+          padding: 12px;
+          background: #f5f5f5;
+          border-radius: 8px;
+          word-break: break-all;
+          font-size: 14px;
+          color: #4285F4;
+          text-decoration: none;
+        }
+        .link:hover {
+          background: #eeeeee;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>🔍 View Reviews on Google</h1>
+        <p>Click the button below to view reviews for <strong>${businessName || 'this business'}</strong> on Google.</p>
+        <button onclick="window.open('${googleUrl}', '_blank')" class="button">Continue to Google Reviews</button>
+        <a href="${googleUrl}" target="_blank" class="link">${googleUrl}</a>
+        <script>
+          // Auto-redirect after 1 second if in top-level window
+          if (window === window.top) {
+            setTimeout(function() {
+              window.location.href = '${googleUrl}';
+            }, 1000);
+          }
+        </script>
+      </div>
+    </body>
+    </html>
+  `);
 });
 
-app.get("/api/health", (_req, res) => {
+app.get("/api/health", (_req: any, res: any) => {
   res.json({ status: "ok", service: "google-reviews-widget" });
 });
 
