@@ -75,11 +75,8 @@ export async function renderGoogleReviewWidget(options: WidgetOptions) {
 
         <div class="gwr-reviews-container">
           ${summary.reviews.map(review => {
-            // Create Google Maps Search API link - official format that opens the place page with reviews
-            const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=Google&query_place_id=${widget.placeId}`;
             return `
-            <a href="${googleMapsUrl}" target="_blank" rel="noopener noreferrer" class="gwr-review-card-link" title="View reviews on Google Maps">
-              <div class="gwr-review-card">
+              <div class="gwr-review-card" data-business="${encodeURIComponent(widget.businessName || widget.title)}" onclick="window.open('https://www.google.com/search?q=' + this.dataset.business + '+reviews', '_blank')" style="cursor: pointer;" title="Click to view reviews on Google">
                 <div class="gwr-review-header">
                   ${settings.showAuthorPhoto ? `<img src="${review.profilePhotoUrl || 'https://www.gravatar.com/avatar/000?d=mp'}" class="gwr-author-img" />` : ""}
                   <div class="gwr-author-info">
@@ -100,7 +97,6 @@ export async function renderGoogleReviewWidget(options: WidgetOptions) {
                 </div>
                 <p class="gwr-review-text">${review.text || "No feedback text provided."}</p>
               </div>
-            </a>
           `;
           }).join("")}
         </div>
@@ -177,24 +173,17 @@ function injectStyles() {
     .gwr-layout-carousel .gwr-reviews-container { display: flex; overflow-x: auto; scrollbar-width: none; }
     .gwr-layout-carousel .gwr-review-card { flex: 0 0 300px; }
 
-    .gwr-review-card-link {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .gwr-review-card-link:hover {
-      transform: translateY(-2px);
-    }
-    .gwr-review-card-link:hover .gwr-review-card {
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-    }
     .gwr-review-card {
       padding: 20px;
       border-radius: var(--gwr-radius);
       border: 1px solid rgba(128,128,128,0.1);
       background: rgba(128,128,128,0.02);
       cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .gwr-review-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
     }
     .gwr-style-shadow .gwr-review-card { box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
     
