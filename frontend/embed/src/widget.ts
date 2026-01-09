@@ -75,10 +75,10 @@ export async function renderGoogleReviewWidget(options: WidgetOptions) {
 
         <div class="gwr-reviews-container">
           ${summary.reviews.map(review => {
-            // Use backend redirect endpoint to bypass CSP/iframe blocking
-            const redirectUrl = `${backendUrl}/api/redirect/google-reviews?placeId=${encodeURIComponent(widget.placeId)}&business=${encodeURIComponent(widget.businessName || widget.title)}`;
+            // Direct Google Maps URL with noreferrer to strip referer header (bypass Google blocking)
+            const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(widget.businessName || widget.title)}&query_place_id=${widget.placeId}`;
             return `
-            <a href="${redirectUrl}" target="_blank" rel="noopener noreferrer" class="gwr-review-card-link" title="View reviews on Google">
+            <a href="${googleMapsUrl}" target="_blank" rel="noreferrer" referrerpolicy="no-referrer" class="gwr-review-card-link" title="View reviews on Google Maps">
               <div class="gwr-review-card">
                 <div class="gwr-review-header">
                   ${settings.showAuthorPhoto ? `<img src="${review.profilePhotoUrl || 'https://www.gravatar.com/avatar/000?d=mp'}" class="gwr-author-img" />` : ""}
