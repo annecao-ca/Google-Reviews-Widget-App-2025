@@ -60,9 +60,6 @@ export async function renderGoogleReviewWidget(options: WidgetOptions) {
                 </div>
               </div>
             </div>
-            <a href="https://search.google.com/local/writereview?placeid=${widget.placeId}" target="_blank" class="gwr-write-btn">
-              Write a Review
-            </a>
           </header>
         ` : ""}
 
@@ -75,10 +72,8 @@ export async function renderGoogleReviewWidget(options: WidgetOptions) {
 
         <div class="gwr-reviews-container">
           ${summary.reviews.map(review => {
-            // Google Maps URL - will be copied to clipboard instead of direct navigation
-            const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(widget.businessName || widget.title)}&query_place_id=${widget.placeId}`;
             return `
-            <div class="gwr-review-card" data-google-url="${googleMapsUrl}">
+            <div class="gwr-review-card">
               <div class="gwr-review-header">
                 ${settings.showAuthorPhoto ? `<img src="${review.profilePhotoUrl || 'https://www.gravatar.com/avatar/000?d=mp'}" class="gwr-author-img" />` : ""}
                 <div class="gwr-author-info">
@@ -98,7 +93,6 @@ export async function renderGoogleReviewWidget(options: WidgetOptions) {
                 </div>
               </div>
               <p class="gwr-review-text">${review.text || "No feedback text provided."}</p>
-              <button class="gwr-copy-link-btn" onclick="event.stopPropagation(); navigator.clipboard.writeText('${googleMapsUrl}').then(() => { this.textContent = '✓ Copied!'; setTimeout(() => { this.textContent = '📋 Copy Google Link'; }, 2000); });">📋 Copy Google Link</button>
             </div>
           `;
           }).join("")}
@@ -149,17 +143,6 @@ function injectStyles() {
     .gwr-rating-value { font-weight: 800; }
     .gwr-total-count { font-size: 0.8em; opacity: 0.5; font-weight: 600; text-transform: uppercase; }
 
-    .gwr-write-btn {
-      padding: 10px 20px;
-      background: var(--gwr-primary);
-      color: white;
-      text-decoration: none;
-      border-radius: var(--gwr-radius);
-      font-weight: 700;
-      font-size: 0.9em;
-      box-shadow: 0 4px 12px var(--gwr-primary)40;
-    }
-
     .gwr-ai-summary { margin: 24px; padding: 20px; background: var(--gwr-primary)10; border-radius: var(--gwr-radius); border: 1px solid var(--gwr-primary)20; }
     .gwr-ai-badge { display: inline-block; padding: 2px 8px; background: var(--gwr-primary); color: white; border-radius: 4px; font-size: 0.7em; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
     .gwr-ai-summary p { margin: 0; font-weight: 600; line-height: 1.4; }
@@ -176,25 +159,12 @@ function injectStyles() {
     .gwr-layout-carousel .gwr-reviews-container { display: flex; overflow-x: auto; scrollbar-width: none; }
     .gwr-layout-carousel .gwr-review-card { flex: 0 0 300px; }
 
-    .gwr-review-card-link {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .gwr-review-card-link:hover {
-      transform: translateY(-2px);
-    }
-    .gwr-review-card-link:hover .gwr-review-card {
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-    }
     .gwr-review-card {
       padding: 20px;
       border-radius: var(--gwr-radius);
       border: 1px solid rgba(128,128,128,0.1);
       background: rgba(128,128,128,0.02);
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: box-shadow 0.2s;
     }
     .gwr-style-shadow .gwr-review-card { box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
     
@@ -208,27 +178,6 @@ function injectStyles() {
     .gwr-google-icon-sml { position: absolute; top: 0; right: 0; opacity: 0.2; }
 
     .gwr-review-text { margin: 16px 0 0; line-height: 1.6; opacity: 0.8; }
-
-    .gwr-copy-link-btn {
-      display: block;
-      width: 100%;
-      margin-top: 12px;
-      padding: 8px 12px;
-      background: #4285F4;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.85em;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .gwr-copy-link-btn:hover {
-      background: #357ae8;
-    }
-    .gwr-theme-dark .gwr-copy-link-btn {
-      background: #5a9cf8;
-    }
 
     .gwr-footer { padding: 16px; text-align: center; font-size: 0.7em; font-weight: 700; opacity: 0.3; text-transform: uppercase; }
   `;
