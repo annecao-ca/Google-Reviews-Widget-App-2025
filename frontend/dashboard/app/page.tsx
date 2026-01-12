@@ -528,11 +528,11 @@ function SnippetModal({ id, onClose, backendUrl }: { id: string, onClose: () => 
 function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: ReviewSummary | null, backendUrl: string }) {
   const { settings } = widget;
   if (!summary) return <div className="text-slate-700 italic text-center py-40 font-medium">Feeding reviews to AI...</div>;
-  
+
   // TypeScript: summary is guaranteed to be non-null after this point
   const safeSummary = summary;
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -545,7 +545,7 @@ function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: Rev
     card.style.setProperty('--ry', `${dx / 20}deg`);
   };
 
-  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
     const card = e.currentTarget;
     card.style.setProperty('--rx', '0deg');
     card.style.setProperty('--ry', '0deg');
@@ -613,7 +613,13 @@ function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: Rev
                 </svg>
               </div>
               <div>
-                <h4 className="m-0 font-black text-3xl tracking-tight leading-none mb-2">{widget.title}</h4>
+                <a
+                  href={`${BACKEND_URL}/api/redirect/google-reviews?placeId=${widget.placeId}&business=${encodeURIComponent(widget.businessName || '')}`}
+                  target="_blank"
+                  className="no-underline hover:opacity-80 transition-opacity"
+                >
+                  <h4 className="m-0 font-black text-3xl tracking-tight leading-none mb-2 text-inherit">{widget.title}</h4>
+                </a>
                 <div className="flex items-center gap-4">
                   {settings.showRating && (
                     <>
@@ -625,11 +631,17 @@ function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: Rev
                 </div>
               </div>
             </div>
-            <div className="p-write-btn">Write a review</div>
+            <a
+              href={`${BACKEND_URL}/api/redirect/google-reviews?placeId=${widget.placeId}&business=${encodeURIComponent(widget.businessName || '')}`}
+              target="_blank"
+              className="p-write-btn no-underline inline-block"
+            >
+              Write a review
+            </a>
           </header>
         )}
 
-        {false && settings.showAiSummary && safeSummary.recentInsights && safeSummary.recentInsights.length > 0 && (
+        {settings.showAiSummary && safeSummary.recentInsights && safeSummary.recentInsights.length > 0 && (
           <div className="p-ai-summary">
             <div className="p-ai-badge"><Sparkles className="w-3.5 h-3.5" /> AI Analysis</div>
             <p className="m-0 text-xl font-bold leading-tight tracking-tight text-white/90">{safeSummary.recentInsights[0]?.summary}</p>
@@ -638,9 +650,11 @@ function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: Rev
 
         <div className="p-reviews-grid">
           {safeSummary.reviews.slice(0, 8).map(r => (
-            <div
+            <a
               key={r.id}
-              className="p-card"
+              href={`${BACKEND_URL}/api/redirect/google-reviews?placeId=${widget.placeId}&business=${encodeURIComponent(widget.businessName || '')}`}
+              target="_blank"
+              className="p-card no-underline block"
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
             >
@@ -649,7 +663,7 @@ function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: Rev
                   {settings.showAuthorPhoto && (
                     <img src={r.profilePhotoUrl || "https://www.gravatar.com/avatar/000?d=mp"} className="p-author-img" />
                   )}
-                  <div>
+                  <div className="text-inherit">
                     <div className="font-black text-base flex items-center gap-1.5 mb-0.5">
                       {r.authorName}
                       <CheckCircle2 className="p-verified w-4 h-4" />
@@ -665,7 +679,7 @@ function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: Rev
                 </div>
               </div>
               <p className="p-text">{r.text || "Highly recommended business!"}</p>
-            </div>
+            </a>
           ))}
         </div>
       </div>
