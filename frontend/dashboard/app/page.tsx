@@ -525,7 +525,7 @@ function SnippetModal({ id, onClose, backendUrl }: { id: string, onClose: () => 
   );
 }
 
-function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: ReviewSummary | null, backendUrl: string }) {
+function WidgetPreview({ widget, summary, backendUrl }: { widget: WidgetConfig, summary: ReviewSummary | null, backendUrl: string }) {
   const { settings } = widget;
   if (!summary) return <div className="text-slate-700 italic text-center py-40 font-medium">Feeding reviews to AI...</div>;
 
@@ -565,10 +565,10 @@ function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: Rev
         .p-widget { font-family: 'Outfit', 'Inter', system-ui, sans-serif; }
         .p-header { padding: 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid ${settings.theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)'}; }
         .p-stars { display: flex; gap: 3px; }
-        .p-write-btn { padding: 14px 28px; background: var(--gwr-primary); color: white; border-radius: var(--gwr-radius); font-weight: 800; font-size: 14px; box-shadow: 0 8px 16px var(--gwr-primary)30; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .p-write-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px var(--gwr-primary)50; }
-        .p-ai-summary { margin: 40px; padding: 32px; background: linear-gradient(135deg, var(--gwr-primary)15 0%, transparent 100%); border-radius: var(--gwr-radius); border: 1px solid var(--gwr-primary)20; position: relative; overflow: hidden; }
-        .p-ai-summary::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, var(--gwr-primary)10, transparent 70%); }
+        .p-write-btn { padding: 14px 28px; background: var(--gwr-primary); color: white; border-radius: var(--gwr-radius); font-weight: 800; font-size: 14px; box-shadow: 0 8px 16px color-mix(in srgb, var(--gwr-primary), transparent 70%); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .p-write-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px color-mix(in srgb, var(--gwr-primary), transparent 50%); }
+        .p-ai-summary { margin: 40px; padding: 32px; background: linear-gradient(135deg, color-mix(in srgb, var(--gwr-primary), transparent 85%) 0%, transparent 100%); border-radius: var(--gwr-radius); border: 1px solid color-mix(in srgb, var(--gwr-primary), transparent 80%); position: relative; overflow: hidden; }
+        .p-ai-summary::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, color-mix(in srgb, var(--gwr-primary), transparent 90%), transparent 70%); }
         .p-ai-badge { display: flex; align-items:center; gap: 8px; padding: 6px 14px; background: var(--gwr-primary); color: white; border-radius: 40px; font-size: 11px; font-weight: 900; text-transform: uppercase; margin-bottom: 16px; width: fit-content; letter-spacing: 0.05em; }
         .p-reviews-grid { 
           padding: 40px; 
@@ -583,7 +583,7 @@ function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: Rev
           background: ${settings.theme === 'dark' ? '#161920' : '#fff'}; 
           border: 1px solid ${settings.theme === 'dark' ? 'rgba(255,255,255,0.05)' : '#f0f0f0'};
           ${settings.cardStyle === 'shadow' ? 'box-shadow: 0 20px 40px rgba(0,0,0,0.04);' : ''}
-          ${settings.cardStyle === 'outline' ? 'border: 2px solid var(--gwr-primary)20;' : ''}
+          ${settings.cardStyle === 'outline' ? 'border: 2px solid color-mix(in srgb, var(--gwr-primary), transparent 80%);' : ''}
           ${settings.layout === 'carousel' ? 'flex: 0 0 340px;' : ''}
           transition: transform 0.15s ease-out, box-shadow 0.3s;
           transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
@@ -632,7 +632,7 @@ function WidgetPreview({ widget, summary }: { widget: WidgetConfig, summary: Rev
               </div>
             </div>
             <a
-              href={`${BACKEND_URL}/api/redirect/google-reviews?placeId=${widget.placeId}&business=${encodeURIComponent(widget.businessName || '')}`}
+              href={`${BACKEND_URL}/api/redirect/google-reviews?type=write&placeId=${widget.placeId}&business=${encodeURIComponent(widget.businessName || '')}`}
               target="_blank"
               className="p-write-btn no-underline inline-block"
             >

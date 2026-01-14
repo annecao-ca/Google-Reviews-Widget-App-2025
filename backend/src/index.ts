@@ -219,8 +219,8 @@ app.post("/api/widgets", async (req: any, res: any) => {
     } else if (message.includes("403") || message.includes("PERMISSION_DENIED")) {
       hint = "API key không có quyền truy cập Places API (New). Kiểm tra Google Cloud Console → APIs & Services → Credentials → API key restrictions.";
     }
-    return res.status(500).json({ 
-      error: message, 
+    return res.status(500).json({
+      error: message,
       details: String(error),
       hint: hint || "Kiểm tra Railway logs để xem lỗi chi tiết."
     });
@@ -287,18 +287,31 @@ app.get("/api/widgets/:id/summary", async (req: any, res: any) => {
 app.get("/api/redirect/google-reviews", async (req: any, res: any) => {
   const placeId = req.query.placeId as string;
   const businessName = req.query.business as string;
-  
+
   if (!placeId) {
     return res.status(400).json({ error: "placeId is required" });
   }
-  
-  // Use Google Search URL format that works reliably
-  const searchQuery = businessName 
-    ? encodeURIComponent(`${businessName} reviews`)
-    : encodeURIComponent(`place_id:${placeId}`);
-  
-  const googleUrl = `https://www.google.com/search?q=${searchQuery}`;
-  
+
+  // Use official Local Review URLs for best experience
+  // Write review: https://search.google.com/local/writereview?placeid=...
+  // View reviews: https://search.google.com/local/reviews?placeid=...
+
+  const type = req.query.type as string;
+  let googleUrl = "";
+
+  if (placeId) {
+    if (type === "write") {
+      // Direct link to write a review
+      googleUrl = `https://search.google.com/local/writereview?placeid=${placeId}`;
+    } else {
+      // Reliable link to view reviews on Google Maps
+      googleUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(businessName || 'Business')}&query_place_id=${placeId}`;
+    }
+  } else {
+    // Fallback to Google Maps search even if placeId is missing, to avoid generic search CSP blocks
+    googleUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((businessName || 'Business') + ' reviews')}`;
+  }
+
   // Return HTML page with JavaScript auto-redirect (bypasses iframe/CSP restrictions)
   res.setHeader('Content-Type', 'text/html');
   res.send(`
@@ -307,6 +320,7 @@ app.get("/api/redirect/google-reviews", async (req: any, res: any) => {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="refresh" content="3;url=${googleUrl}">
       <title>View Reviews on Google</title>
       <style>
         body {
@@ -368,21 +382,33 @@ app.get("/api/redirect/google-reviews", async (req: any, res: any) => {
         .link:hover {
           background: #eeeeee;
         }
+        .loader {
+          width: 40px;
+          height: 40px;
+          border: 4px solid #f3f3f3;
+          border-top: 4px solid #4285F4;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin: 20px auto;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
       </style>
     </head>
     <body>
       <div class="container">
+        <div class="loader"></div>
         <h1>🔍 View Reviews on Google</h1>
-        <p>Click the button below to view reviews for <strong>${businessName || 'this business'}</strong> on Google.</p>
-        <button onclick="window.open('${googleUrl}', '_blank')" class="button">Continue to Google Reviews</button>
-        <a href="${googleUrl}" target="_blank" class="link">${googleUrl}</a>
+        <p>You are being redirected to view reviews for <strong>${businessName || 'this business'}</strong> on Google.</p>
+        <button onclick="window.location.replace('${googleUrl}')" class="button">Continue to Google Reviews</button>
+        <a href="${googleUrl}" class="link">Redirecting to: ${googleUrl}</a>
         <script>
-          // Auto-redirect after 1 second if in top-level window
-          if (window === window.top) {
-            setTimeout(function() {
-              window.location.href = '${googleUrl}';
-            }, 1000);
-          }
+          // Automatic redirect after 1 second
+          setTimeout(function() {
+            window.location.replace('${googleUrl}');
+          }, 1000);
         </script>
       </div>
     </body>
@@ -400,12 +426,12 @@ async function syncAllWidgets() {
     console.warn("[Scheduled Sync] Skipping: GOOGLE_API_KEY not configured");
     return;
   }
-  
+
   try {
     console.log("[Scheduled Sync] Starting sync for all widgets...");
     const widgets = await widgetStore.list();
     console.log(`[Scheduled Sync] Found ${widgets.length} widget(s) to sync`);
-    
+
     for (const widget of widgets) {
       try {
         console.log(`[Scheduled Sync] Syncing widget: ${widget.id} (${widget.businessName || widget.title})`);

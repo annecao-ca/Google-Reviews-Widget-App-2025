@@ -66,7 +66,7 @@ export async function renderGoogleReviewWidget(options: WidgetOptions) {
                 </div>
               </div>
             </div>
-            <a href="${backendUrl}/api/redirect/google-reviews?placeId=${widget.placeId}&business=${encodeURIComponent(widget.businessName || '')}" 
+            <a href="${backendUrl}/api/redirect/google-reviews?type=write&placeId=${widget.placeId}&business=${encodeURIComponent(widget.businessName || '')}" 
                target="_blank" 
                referrerpolicy="no-referrer-when-downgrade"
                rel="nofollow noopener noreferrer"
@@ -85,8 +85,8 @@ export async function renderGoogleReviewWidget(options: WidgetOptions) {
 
         <div class="gwr-reviews-container">
           ${summary.reviews.map(review => {
-            const reviewLink = `${backendUrl}/api/redirect/google-reviews?placeId=${widget.placeId}&business=${encodeURIComponent(widget.businessName || '')}`;
-            return `
+      const reviewLink = `${backendUrl}/api/redirect/google-reviews?placeId=${widget.placeId}&business=${encodeURIComponent(widget.businessName || '')}`;
+      return `
             <a href="${reviewLink}" 
                target="_blank" 
                referrerpolicy="no-referrer-when-downgrade"
@@ -114,7 +114,7 @@ export async function renderGoogleReviewWidget(options: WidgetOptions) {
               <p class="gwr-review-text">${review.text || "No feedback text provided."}</p>
             </a>
           `;
-          }).join("")}
+    }).join("")}
         </div>
 
         <footer class="gwr-footer">
@@ -162,7 +162,7 @@ function injectStyles() {
     .gwr-rating-value { font-weight: 800; }
     .gwr-total-count { font-size: 0.8em; opacity: 0.5; font-weight: 600; text-transform: uppercase; }
 
-    .gwr-ai-summary { margin: 24px; padding: 20px; background: var(--gwr-primary)10; border-radius: var(--gwr-radius); border: 1px solid var(--gwr-primary)20; }
+    .gwr-ai-summary { margin: 24px; padding: 20px; background: color-mix(in srgb, var(--gwr-primary), transparent 90%); border-radius: var(--gwr-radius); border: 1px solid color-mix(in srgb, var(--gwr-primary), transparent 80%); }
     .gwr-ai-badge { display: inline-block; padding: 2px 8px; background: var(--gwr-primary); color: white; border-radius: 4px; font-size: 0.7em; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
     .gwr-ai-summary p { margin: 0; font-weight: 600; line-height: 1.4; }
 
@@ -192,7 +192,7 @@ function injectStyles() {
     .gwr-author-info { flex: 1; }
     .gwr-author-name { font-weight: 700; display: flex; align-items: center; gap: 4px; }
     .gwr-verified-badge { color: #4285F4; }
-    .gwr-review-meta { display: flex; items-center: center; gap: 8px; margin-top: 2px; }
+    .gwr-review-meta { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
     .gwr-date { font-size: 0.8em; opacity: 0.5; }
     .gwr-google-icon-sml { position: absolute; top: 0; right: 0; opacity: 0.2; }
 

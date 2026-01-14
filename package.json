@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "NODE_ENV=development ts-node-dev --respawn --transpile-only backend/src/index.ts",
-    "vercel-build": "npx prisma generate --schema=backend/prisma/schema.prisma",
+    "vercel-build": "cd frontend/embed && npm install && npm run build && cd ../.. && npx prisma generate --schema=backend/prisma/schema.prisma",
     "start": "node backend/dist/index.js"
   },
   "dependencies": {

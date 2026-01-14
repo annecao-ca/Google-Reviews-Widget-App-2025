@@ -10,9 +10,42 @@ export async function resolvePlaceIdFromText(
   query: string,
   apiKey: string
 ): Promise<PlaceSuggestion[] | null> {
+  // --- Handle Google Maps URLs ---
+  let effectiveQuery = query.trim();
+
+  // Example: https://www.google.com/maps/place/FIRST+NAILS/@50.7035167,-113...
+  if (effectiveQuery.startsWith("http")) {
+    try {
+      const url = new URL(effectiveQuery);
+
+      // 1. Handle /maps/place/Business+Name/...
+      if (url.pathname.includes("/maps/place/")) {
+        const match = url.pathname.match(/\/maps\/place\/([^/]+)/);
+        if (match && match[1]) {
+          effectiveQuery = decodeURIComponent(match[1].replace(/\+/g, " "));
+        }
+      }
+      // 2. Handle /maps/search/Business+Name/...
+      else if (url.pathname.includes("/maps/search/")) {
+        const match = url.pathname.match(/\/maps\/search\/([^/]+)/);
+        if (match && match[1]) {
+          effectiveQuery = decodeURIComponent(match[1].replace(/\+/g, " "));
+        }
+      }
+      // 3. Handle query parameters (e.g., ?q=Business+Name)
+      else if (url.searchParams.get("q")) {
+        effectiveQuery = url.searchParams.get("q") || effectiveQuery;
+      }
+
+      console.log(`[placeResolver] Processed URL into query: "${effectiveQuery}"`);
+    } catch (e) {
+      console.warn("[placeResolver] Failed to parse URL, using raw query:", effectiveQuery);
+    }
+  }
+
   // Use Places API (New) - required by Google
   const url = "https://places.googleapis.com/v1/places:searchText";
-  
+
   const res = await fetch(url, {
     method: "POST",
     headers: {
@@ -21,7 +54,7 @@ export async function resolvePlaceIdFromText(
       "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress"
     },
     body: JSON.stringify({
-      textQuery: query,
+      textQuery: effectiveQuery,
       maxResultCount: 5
     })
   });
@@ -34,9 +67,9 @@ export async function resolvePlaceIdFromText(
     } catch {
       // If not JSON, use raw text
     }
-    
+
     console.error(`[placeResolver] HTTP ${res.status}:`, errorText);
-    
+
     // Provide helpful error messages
     if (res.status === 403) {
       const reason = errorData?.error?.details?.[0]?.reason || errorData?.error?.status;
@@ -48,7 +81,7 @@ export async function resolvePlaceIdFromText(
         );
       }
     }
-    
+
     throw new Error(
       `Google Places API (New) failed: ${res.status} ${res.statusText}. ` +
       `Chi tiết: ${errorData?.error?.message || errorText}`
@@ -56,7 +89,7 @@ export async function resolvePlaceIdFromText(
   }
 
   const data = await res.json();
-  
+
   if (!data.places || !Array.isArray(data.places) || !data.places.length) {
     console.log(`[placeResolver] No places found for query: "${query}"`);
     return null;
